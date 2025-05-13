@@ -1,3 +1,14 @@
+
+<script setup>
+import Navbar from './components/Navbar.vue';
+import Hero from './components/Hero.vue';
+import HomeCard from './components/HomeCard.vue';
+import JobListings from './components/JobListings.vue';
+
+</script>
 <template>
-  <h2>Hello I'm Yared</h2>
+<Navbar />
+<Hero title="Become a Vue Dev" subtitle="Find the vue job that fits your skills and needs" />
+<HomeCard />
+<JobListings />
 </template>
