@@ -1,6 +1,5 @@
 <script setup>
 import Card from './Card.vue';
-
 </script>
 <template>
     <section class="py-4">

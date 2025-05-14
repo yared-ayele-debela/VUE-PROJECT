@@ -1,5 +1,6 @@
 <script setup>
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import BackButton from '@/components/BackButton.vue';
 import {reactive,onMounted} from 'vue';
 import { useRoute,RouterLink } from 'vue-router';
 import axios from 'axios';
@@ -13,7 +14,7 @@ const state=reactive({
 
 onMounted(async () => {
     try{
-        const response = await axios.get(`http://localhost:5000/jobs/${jobId}`);
+        const response = await axios.get(`api/jobs/${jobId}`);
         state.job=response.data;
     }catch(error){
         console.error('Error fetching jobs',error);
@@ -25,6 +26,7 @@ onMounted(async () => {
 
 
 <template>
+    <BackButton />
      <section v-if="!state.isLoading" class="bg-green-50">
       <div class="container px-6 py-10 m-auto">
         <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-70/30">
@@ -38,7 +40,7 @@ onMounted(async () => {
                 class="flex justify-center mb-4 text-gray-500 align-middle md:justify-start"
               >
                 <i
-                  class="mr-2 text-lg text-orange-700 fa-solid fa-location-dot"
+                  class="mr-2 text-lg text-orange-700 pi pi-map-marker"
                 ></i>
                 <p class="text-orange-700">{{ state.job.location }}</p>
               </div>
@@ -87,10 +89,10 @@ onMounted(async () => {
             <!-- Manage -->
             <div class="p-6 mt-6 bg-white rounded-lg shadow-md">
               <h3 class="mb-6 text-xl font-bold">Manage Job</h3>
-              <a
-                href="add-job.html"
+              <RouterLink
+                :to="`/jobs/edit/${state.job.id}`"
                 class="block w-full px-4 py-2 mt-4 font-bold text-center text-white bg-green-500 rounded-full hover:bg-green-600 focus:outline-none focus:shadow-outline"
-                >Edit Job</a
+                >Edit Job</RouterLink
               >
               <button
                 class="block w-full px-4 py-2 mt-4 font-bold text-white bg-red-500 rounded-full hover:bg-red-600 focus:outline-none focus:shadow-outline"
