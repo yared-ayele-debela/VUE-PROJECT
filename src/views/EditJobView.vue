@@ -1,15 +1,19 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive,onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 
 const router = useRouter();
 const toast = useToast();
+const route= useRoute();
+
+const jobId=route.params.id;
+
 
 const form = reactive({
-  type: 'Full-Time',
+ type: 'Full-Time',
   title: '',
   description: '',
   salary: '',
@@ -20,11 +24,15 @@ const form = reactive({
     contactEmail: '',
     contactPhone: ''
   },
-  
+});
+
+const state = reactive({
+    job: {},
+    isLoading:true,
 });
 
 const handleSubmit = async () => {
-  const newJob = {
+  const updatedJob = {
     title: form.title,
     type: form.type,
     location: form.location,
@@ -38,22 +46,46 @@ const handleSubmit = async () => {
     },
   };
   try {
-    const response = await axios.post('/api/jobs', newJob);
-    toast.success('Job Added Successfully!')
+    const response = await axios.put(`/api/jobs/${jobId}`, updatedJob);
+    toast.success('Job Updated Successfully!')
     router.push(`/jobs/${response.data.id}`);
 
   } catch (error) {
-    toast.error("Job was not Added!");
+    toast.error("Job was not Updated!");
     console.error('Error adding job:', error);
   }
 };
+
+
+onMounted (async () =>{
+    try{
+        const response=await axios.get(`/api/jobs/${jobId}`);
+        state.job=response.data;
+        
+        form.type=state.job.type;
+        form.title=state.job.title;
+        form.description=state.job.description;
+        form.salary=state.job.salary;
+        form.location=state.job.location;
+        form.company.name=state.job.company.name;
+        form.company.description=state.job.company.description;
+        form.company.contactEmail=state.job.company.contactEmail;
+        form.company.contactPhone=state.job.company.contactPhone;
+        
+    }catch(error){
+        console.error('Error fetching job',error);
+        
+    }finally{
+        state.isLoading=false;
+    }
+});
 </script>
 <template>
   <section class="bg-green-50">
     <div class="container max-w-2xl py-24 m-auto">
       <div class="px-6 py-8 m-4 mb-4 bg-white border rounded-md shadow-md md:m-0">
         <form @submit.prevent="handleSubmit">
-          <h2 class="mb-6 text-3xl font-semibold text-center">Add Job</h2>
+          <h2 class="mb-6 text-3xl font-semibold text-center">Edit Job</h2>
 
           <div class="mb-4">
             <label for="type" class="block mb-2 font-bold text-gray-700">Job Type</label>
@@ -131,7 +163,7 @@ const handleSubmit = async () => {
             <button
               class="w-full px-4 py-2 font-bold text-white bg-green-500 rounded-full hover:bg-green-600 focus:outline-none focus:shadow-outline"
               type="submit">
-              Add Job
+              Edit Job
             </button>
           </div>
         </form>
